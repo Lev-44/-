@@ -1,0 +1,58 @@
+from tkinter import *
+import pyperclip
+from tkinter import filedialog  as fd
+from tkinter import messagebox as mb
+import os
+import json
+import requests
+from tkinter import ttk
+
+# def save_history(path,link):
+#     history=[]
+#     if os.path.exists(history_file):
+#         with open(history_file,"r") as file:
+#             history=json.load(file)
+
+    # history.append({"file_path":os.path.basename(file_path), "file_link":link})
+
+    # with open(history_file,"w") as file:
+    #     json.dump(history,file, indent=6)
+
+def upload():
+    try:
+        filepath=fd.askopenfilename()#получим путь к файлу для его загрузки
+        if filepath:#если не пустая то выполнить ниже
+            files={"file":open(filepath,"rb")}#откр файл для чтения по байтно для отправкив сеть 'rb' - Открывает файл в бинарном режиме только для чтения. Указатель файла помещается в начале файла. Это режим "по умолчанию".
+            response=requests.post('https://file.io/',files=files)#ответ на запрос post закрытый вид запрса с отправкой данных(строка URL,путь к отправляемому файлу)
+            if response.status_code==200:#Объект requests.Response модуля requests содержит всю информацию ответа сервера на HTTP-запрос requests.get(), requests.post() и т.д.,если все гуд то поехали далее
+                print(response.headers)# возвратит заголовок сервера
+                s=response.json()#возвратит ответ в виде json
+                link=response.json()['link']#сохранияем ссылку в переменную линк, из файла json по ключу 'link'
+                if link:#если есть что то в link то поехали
+                    e.delete(0,END)#очищаем энтри от говна
+                    e.insert(0, link)#вставляем в энтри то что в link
+                    # pyperclip.copy(link)#копир ссылку в буфер обмена
+
+                else:
+                    raise ValueError("Нет ссылки")
+    except ValueError as ve:
+                mb.showerror("Ошибка", f"Произошла ошибка: {ve}")
+    except Exception as err:
+                mb.showerror("Ошибка", f"Произошла ошибка: {err}")
+
+
+
+
+
+window=Tk()
+window.title("Сохранение файлов в облаке")
+window.geometry("400x500")
+
+but=ttk.Button(text="Загрузить", command=upload)
+but.pack(pady=10)
+
+
+e=Entry()
+e.pack()
+
+window.mainloop()
