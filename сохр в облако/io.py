@@ -19,31 +19,31 @@ def show_history():
     my_links = Listbox(history_window, width=50, height=20)
     my_links.grid(row=0, column=1, padx=(0, 10), pady=10)
 
-    with open(history_file, "r") as f:
+    with open(history_file, 'r') as f:
         history=json.load(f)#список словарей в json
         for i in history:
             my_box.insert(END, i['file_path'])#забираем из json значение по ключю File_path
             my_links.insert(END, i['file_link'])#забираем из json значение по ключю File_link
 
-
+ 
 
 
 def save_history(file_path,link):
      history=[]#пустой список
      if os.path.exists(history_file):#проверяем есть ли хистори файл
-         with open(history_file,"r") as file:#открываем history_file в json
+         with open(history_file, 'r') as file:#открываем history_file в json
              history=json.load(file)#загружаем файил и преоьразовываем json в пайтон и закр файл
 
      history.append({"file_path":os.path.basename(file_path), "file_link":link})#добавили новую инфу в history список причем в file_path только имя файла не весь путь тк basename использ
 
-     with open(history_file,"w") as file:# открываем файл для записи
+     with open(history_file, 'w') as file:# открываем файл для записи
          json.dump(history,file, indent=4)# сохраняем новую инфу там словарь в формат json
 
 def upload():
     try:
         filepath=fd.askopenfilename()#получим путь к файлу для его загрузки
         if filepath:#если не пустая то выполнить ниже
-            files={"file":open(filepath,"rb")}#откр файл для чтения по байтно для отправкив сеть 'rb' - Открывает файл в бинарном режиме только для чтения. Указатель файла помещается в начале файла. Это режим "по умолчанию".
+            files={"file":open(filepath,'rb')}#откр файл для чтения по байтно для отправкив сеть 'rb' - Открывает файл в бинарном режиме только для чтения. Указатель файла помещается в начале файла. Это режим "по умолчанию".
             response=requests.post('https://file.io/',files=files)#ответ на запрос post закрытый вид запрса с отправкой данных(строка URL,путь к отправляемому файлу)
             response.raise_for_status()#для обработки в исключении если будет ошибка при запросе статуса
             if response.status_code==200:#Объект requests.Response модуля requests содержит всю информацию ответа сервера на HTTP-запрос requests.get(), requests.post() и т.д.,если все гуд то поехали далее
